@@ -326,6 +326,7 @@
     <EmbeddedResource Include="bundle_terraheim" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="bundle_terraheimnewitems" />
     <None Include="weaponBalance.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

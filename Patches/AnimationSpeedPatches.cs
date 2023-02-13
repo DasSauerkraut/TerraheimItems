@@ -26,71 +26,78 @@ namespace TerraheimItems.Patches
                 return;
             //Log.LogMessage(1);
             //Make sure there is animation playing
-            if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null)
+            if (___m_animator?.GetCurrentAnimatorClipInfo(0)?.Any() != true 
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip == null 
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Idle")
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Jog")
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Run")
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Walk")
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Standing")
+                || ___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("jump"))
                 return;
-            //Log.LogMessage(2);
 
-            float twoHandSpeedBns = 0f;
-            if (___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed") && (___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-                twoHandSpeedBns = (___m_character.GetSEMan().GetStatusEffect("Two Hand Attack Speed") as SE_TwoHandAttackSpeed).GetSpeed();
-            //Log.LogMessage(3);
-
-            float attackSpeedBns = 0f;
-            if (___m_character.GetSEMan().HaveStatusEffect("Adrenaline"))
-                attackSpeedBns = (___m_character.GetSEMan().GetStatusEffect("Adrenaline") as SE_Adrenaline).GetAttackSpeed();
-            //Check if weapon is a sword
-            if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Bomb"))
+            //Don't change speed if it is already modified
+            if(baseAnimationSpeeds.ContainsKey(___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name))
             {
-                //Log.LogWarning("Throwing Bomb");
-                if ((bool)((___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_name.Contains("throwingaxe")))
+                if (baseAnimationSpeeds[___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name] != ___m_animator.speed)
                 {
-                    //Log.LogWarning("Is throwingaxe");
-                    ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, (float)balance["ThrowingAxeAnimationSpeedAdjust"] + attackSpeedBns);
+                    //Log.LogMessage("Mismatch");
+                    return;
                 }
             }
+            //Log.LogMessage(2);
+            float statusAttackSpeedBonus = 0f;
+            if (___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed") 
+                && (___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon
+                )
+                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Two Hand Attack Speed") as SE_TwoHandAttackSpeed).GetSpeed();
+
+            if (___m_character.GetSEMan().HaveStatusEffect("Adrenaline"))
+                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Adrenaline") as SE_Adrenaline).GetAttackSpeed();
+
+            float weaponAttackSpeedBonus = 0f;
+            //Throwing Axes
+            if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("Bomb"))
+            {
+                if ((bool)((___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_name.Contains("throwingaxe")))
+                    weaponAttackSpeedBonus = (float)balance["ThrowingAxeAnimationSpeedAdjust"];
+            }
+            //Greatsword First Swing
             else if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("BattleAxe1"))
             {
                 if ((bool)((___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_name.Contains("greatsword")))
-                {
-                    //Log.LogWarning("Is throwingaxe");
-                    ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, (float)balance["GreatswordStartAnimationSpeedAdjust"] + twoHandSpeedBns + attackSpeedBns);
-                }
-                else if (___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed"))
-                {
-                    ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, 1 + twoHandSpeedBns + attackSpeedBns);
-                }
+                    weaponAttackSpeedBonus = (float)balance["GreatswordStartAnimationSpeedAdjust"];
             }
+            //Greatsword Additional Swings
             else if (___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.StartsWith("BattleAxe"))
             {
                 if ((bool)((___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_name.Contains("greatsword")))
-                {
-                    //Log.LogWarning("Is throwingaxe");
-                    ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, (float)balance["GreatswordAnimationSpeedAdjust"] + twoHandSpeedBns + attackSpeedBns);
-                }
-                else if (___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed"))
-                {
-                    ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, 1 + twoHandSpeedBns + attackSpeedBns);
-                }
+                    weaponAttackSpeedBonus = (float)balance["GreatswordAnimationSpeedAdjust"];
             }
-            else if(___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed") && (___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-            {
-                ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, 1 + twoHandSpeedBns + attackSpeedBns);
-            }
-            else if (___m_character.GetSEMan().HaveStatusEffect("Adrenaline"))
-                ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, 1 + attackSpeedBns);
 
-            //Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
+            if (weaponAttackSpeedBonus + statusAttackSpeedBonus != 0f)
+            {
+                ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, weaponAttackSpeedBonus, statusAttackSpeedBonus);
+                Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
+            }
+
 
         }
 
-        public static float ChangeSpeed(Character character, Animator animator, float speed)
+        public static float ChangeSpeed(Character character, Animator animator, float speed, float speedMod)
         {
             string name = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
             
             if (!baseAnimationSpeeds.ContainsKey(name))
                 baseAnimationSpeeds.Add(name, animator.speed);
 
-            return baseAnimationSpeeds[name] * speed;
+            if (speedMod < 1)
+                speedMod += 1;
+
+            if (speed < 1)
+                speed += 1;
+
+            return baseAnimationSpeeds[name] * speed * speedMod;
         }
     }
 }

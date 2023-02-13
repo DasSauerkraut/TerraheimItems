@@ -12,6 +12,7 @@ namespace TerraheimItems.Utility
         static JObject balance = UtilityFunctions.GetJsonFromFile("weaponBalance.json");
 
         public const string AssetBundleName = "bundle_terraheim";
+        public const string NewAssetBundleName = "bundle_terraheimnewitems";
         public static AssetBundle TerraheimAssetBundle;
 
         public static GameObject FolcbrandPrefab;
@@ -66,6 +67,8 @@ namespace TerraheimItems.Utility
 
         public static GameObject JavelinFlintPrefab;
         public static GameObject JavelinBronzePrefab;
+
+        public static GameObject ClubPufferfishPrefab;
 
         public static GameObject BowFireExplosionPrefab;
         public static GameObject AxeFireExplosionPrefab;
@@ -156,6 +159,10 @@ namespace TerraheimItems.Utility
             VFXSpearFireTeleportInPrefab = TerraheimAssetBundle.LoadAsset<GameObject>("Assets/CustomItems/flametal/spear/spearFire_teleportIn.prefab");
             VFXSpearFireTeleportOutPrefab = TerraheimAssetBundle.LoadAsset<GameObject>("Assets/CustomItems/flametal/spear/spearFire_teleportOut.prefab");
             SFXAtgeirFireHitPrefab = TerraheimAssetBundle.LoadAsset<AudioClip>("Assets/CustomItems/flametal/atgeir/Flame_SpitFire3.wav");
+
+            TerraheimAssetBundle = GetAssetBundleFromResources(NewAssetBundleName);
+            Log.LogMessage("New Bundle Loaded");
+            ClubPufferfishPrefab = TerraheimAssetBundle.LoadAsset<GameObject>("Assets/customAssets/ClubPufferfishTH.prefab");
         }
 
         public static AssetBundle GetAssetBundleFromResources(string filename)
