@@ -47,10 +47,10 @@ namespace TerraheimItems.Patches
             }
             //Log.LogMessage(2);
             float statusAttackSpeedBonus = 0f;
-            if (___m_character.GetSEMan().HaveStatusEffect("Two Hand Attack Speed") 
+            if (___m_character.GetSEMan().HaveStatusEffect("Attack Speed") 
                 && (___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon
                 )
-                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Two Hand Attack Speed") as SE_TwoHandAttackSpeed).GetSpeed();
+                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Attack Speed") as SE_AttackSpeed).GetSpeed();
 
             if (___m_character.GetSEMan().HaveStatusEffect("Adrenaline"))
                 statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Adrenaline") as SE_Adrenaline).GetAttackSpeed();
@@ -78,7 +78,7 @@ namespace TerraheimItems.Patches
             if (weaponAttackSpeedBonus + statusAttackSpeedBonus != 0f)
             {
                 ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, weaponAttackSpeedBonus, statusAttackSpeedBonus);
-                Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
+                //Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
             }
 
 

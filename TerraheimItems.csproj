@@ -134,7 +134,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="Terraheim, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Terraheim\Libs\Terraheim.dll</HintPath>
+      <HintPath>..\Terraheim\bin\Debug\net472\Terraheim.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
