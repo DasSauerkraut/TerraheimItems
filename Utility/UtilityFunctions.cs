@@ -23,7 +23,7 @@ namespace TerraheimItems.Utility
 
         public static void ModifyWeaponDamage(ref CustomItem item, JToken damages, string type = "", string description = "")
         {
-            foreach(var damage in damages["damages"])
+            foreach (var damage in damages["damages"])
             {
                 switch ((string)damage["type"])
                 {
@@ -78,7 +78,7 @@ namespace TerraheimItems.Utility
         {
             var itemReqs = new List<Piece.Requirement>();
             int index = 0;
-            foreach(var item in json["recipe"])
+            foreach (var item in json["recipe"])
             {
                 if ((string)item["item"] == "SalamanderFur")
                 {
@@ -96,7 +96,7 @@ namespace TerraheimItems.Utility
                 }
                 index++;
             }
-            if(useName)
+            if (useName)
                 recipe.name = $"Recipe_{json.Path}";
             recipe.m_resources = itemReqs.ToArray();
             recipe.m_craftingStation = Mock<CraftingStation>.Create((string)json["station"]);
@@ -116,6 +116,18 @@ namespace TerraheimItems.Utility
             if (name.Contains("_axe_serpent"))
                 return true;
             return false;
+        }
+
+        public static StatusEffect GetStatusEffectFromName(string name, SEMan seman)
+        {
+            foreach (StatusEffect statusEffect in seman.GetStatusEffects())
+            {
+                if (statusEffect.name == name)
+                {
+                    return statusEffect;
+                }
+            }
+            return null;
         }
 
         

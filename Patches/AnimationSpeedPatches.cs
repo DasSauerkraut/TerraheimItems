@@ -18,7 +18,7 @@ namespace TerraheimItems.Patches
         static JObject balance = UtilityFunctions.GetJsonFromFile("weaponBalance.json");
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(CharacterAnimEvent), "FixedUpdate")]
+        [HarmonyPatch(typeof(CharacterAnimEvent), "CustomFixedUpdate")]
         static void CharacterAnimFixedUpdatePrefix(ref Animator ___m_animator, Character ___m_character)
         {
             //Make sure this is being applied to the right things
@@ -47,13 +47,11 @@ namespace TerraheimItems.Patches
             }
             //Log.LogMessage(2);
             float statusAttackSpeedBonus = 0f;
-            if (___m_character.GetSEMan().HaveStatusEffect("Attack Speed") 
-                && (___m_character as Humanoid).GetCurrentWeapon()?.m_shared?.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon
-                )
-                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Attack Speed") as SE_AttackSpeed).GetSpeed();
+            if (___m_character.GetSEMan().HaveStatusEffect("Attack Speed"))
+                statusAttackSpeedBonus += (UtilityFunctions.GetStatusEffectFromName("Attack Speed", ___m_character.GetSEMan()) as SE_AttackSpeed).GetSpeed();
 
             if (___m_character.GetSEMan().HaveStatusEffect("Adrenaline"))
-                statusAttackSpeedBonus += (___m_character.GetSEMan().GetStatusEffect("Adrenaline") as SE_Adrenaline).GetAttackSpeed();
+                statusAttackSpeedBonus += (UtilityFunctions.GetStatusEffectFromName("Adrenaline", ___m_character.GetSEMan()) as SE_Adrenaline).GetAttackSpeed();
 
             float weaponAttackSpeedBonus = 0f;
             //Throwing Axes
@@ -75,13 +73,12 @@ namespace TerraheimItems.Patches
                     weaponAttackSpeedBonus = (float)balance["GreatswordAnimationSpeedAdjust"];
             }
 
+            Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Prev. Speed {___m_animator.speed}");
             if (weaponAttackSpeedBonus + statusAttackSpeedBonus != 0f)
             {
                 ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, weaponAttackSpeedBonus, statusAttackSpeedBonus);
-                //Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
             }
-
-
+            Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
         }
 
         public static float ChangeSpeed(Character character, Animator animator, float speed, float speedMod)
@@ -96,6 +93,10 @@ namespace TerraheimItems.Patches
 
             if (speed < 1)
                 speed += 1;
+
+            if (baseAnimationSpeeds[name] * speed * speedMod > 7.59375)
+                return 7.7f;
+
 
             return baseAnimationSpeeds[name] * speed * speedMod;
         }
