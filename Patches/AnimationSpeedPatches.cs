@@ -73,12 +73,10 @@ namespace TerraheimItems.Patches
                     weaponAttackSpeedBonus = (float)balance["GreatswordAnimationSpeedAdjust"];
             }
 
-            Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Prev. Speed {___m_animator.speed}");
             if (weaponAttackSpeedBonus + statusAttackSpeedBonus != 0f)
             {
                 ___m_animator.speed = ChangeSpeed(___m_character, ___m_animator, weaponAttackSpeedBonus, statusAttackSpeedBonus);
             }
-            Log.LogMessage($"Animation Name {___m_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name}. Speed {___m_animator.speed}");
         }
 
         public static float ChangeSpeed(Character character, Animator animator, float speed, float speedMod)

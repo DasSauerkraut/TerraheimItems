@@ -16,7 +16,7 @@ namespace TerraheimItems.Patches
         [HarmonyPatch(typeof(SEMan), "OnDamaged")]
         public static void DamagePrefix(SEMan __instance, HitData hit)
         {
-            if (__instance.m_character.IsPlayer() && hit.m_statusEffect == "ChainExplosionListener")
+            if (__instance.m_character.IsPlayer() && hit.m_statusEffectHash == "ChainExplosionListener".GetStableHashCode())
             {
                 hit.m_damage.m_damage = 0f;
                 //Log.LogInfo("NewDamage From Explosion " + hit.GetTotalDamage());
